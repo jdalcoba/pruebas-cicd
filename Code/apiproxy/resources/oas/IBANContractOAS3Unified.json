@@ -1,0 +1,492 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "IBAN Validation API- OpenAPI 3.0",
+    "description": "The IBAN Validation API is a service whose purpose is to validate the format of an IBAN.",
+    "contact": {
+      "name": "hub_integracion",
+      "url": "https://pge-apigee-non-prod-espgeportalnonproduct.apigee.io/",
+      "email": "hub_integracion.totalenergies.es@capgemini.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "description": "URL of the Apigee Proxy.",
+      "url": "https://apigee-dev.totalenergies.es/finance/bankinginformation/iban/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "IBANValidate",
+      "description": "Tag of the IBAN validation operation."
+    }
+  ],
+  "paths": {
+    "/validate": {
+      "post": {
+        "summary": "IBAN validation.",
+        "description": "Validates the format of the IBAN sent.",
+        "operationId": "validateIBAN",
+        "tags": [
+          "IBANValidate"
+        ],
+        "security": [
+          {
+            "OAuth2": [
+              "read:iban"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IBAN"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "IBAN validated correctly.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IBANValidationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The server could not understand the request due to invalid syntax.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Default400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The client must authenticate itself to get the requested response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Default401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The client does not have access rights to the content; the request should not be repeated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Default403"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The server can not find the requested resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Default404"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "The request method is known by the server but is not supported by the target resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Default405"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request could not be completed due to a conflict with the current state of the resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Default409"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "The request could not be completed due to a conflict with the current state of the resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Default409"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request was well-formed but was unable to be followed due to semantic errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Default422"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "The user has sent too many requests in a given amount of time.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Default429"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "The server has encountered a situation it doesn't know how to handle.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Default500"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The server encountered a temporary error and could not complete your request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Default502"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "The server didn't get a response in time in order to get a response to complete the request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Default504"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Default400": {
+        "description": "The server could not understand the request due to invalid syntax.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error code",
+            "example": "INVALID_REQUEST"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error description",
+            "example": "The request is missing a required parameter"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional info about the error",
+            "example": {
+              "missing_parameter": "name"
+            }
+          }
+        }
+      },
+      "Default401": {
+        "description": "The client must authenticate itself to get the requested response.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error code",
+            "example": "UNAUTHORIZED"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error description",
+            "example": "The request requires user authentication"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional info about the error",
+            "example": {
+              "missing_parameter": "token"
+            }
+          }
+        }
+      },
+      "Default403": {
+        "description": "The client does not have access rights to the content; the request should not be repeated.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error code",
+            "example": "FORBIDDEN"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error description",
+            "example": "The request is not allowed"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional info about the error",
+            "example": {
+              "resource": "userInformation"
+            }
+          }
+        }
+      },
+      "Default404": {
+        "description": "The server can not find the requested resource.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error code",
+            "example": "NOT_FOUND"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error description",
+            "example": "The requested resource was not found"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional info about the error",
+            "example": {
+              "resource": "user"
+            }
+          }
+        }
+      },
+      "Default405": {
+        "description": "The request method is known by the server but is not supported by the target resource.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error code",
+            "example": "METHOD_NOT_ALLOWED"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error description",
+            "example": "The request method is not allowed"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional info about the error",
+            "example": {
+              "method": "POST"
+            }
+          }
+        }
+      },
+      "Default409": {
+        "description": "The request could not be completed due to a conflict with the current state of the resource.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error code",
+            "example": "CONFLICT"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error description",
+            "example": "The request could not be completed due to a conflict with the current state of the resource"
+          },
+          "details": {
+            "type": "string",
+            "description": "Additional info about the error",
+            "example": "The username 'john_doe' already exists."
+          }
+        }
+      },
+      "Default415": {
+        "$ref": "#/components/schemas/Default409"
+      },
+      "Default422": {
+        "description": "The request was well-formed but was unable to be followed due to semantic errors.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error code",
+            "example": "UNPROCESSABLE_ENTITY"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error description",
+            "example": "The request was well-formed but was unable to be followed due to semantic errors"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional info about the error",
+            "example": {
+              "validation_errors": {
+                "email": "The email is invalid",
+                "password": "The password is too short"
+              }
+            }
+          }
+        }
+      },
+      "Default429": {
+        "description": "The user has sent too many requests in a given amount of time.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error code",
+            "example": "TOO_MANY_REQUESTS"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error description",
+            "example": "The user has sent too many requests in a given amount of time"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional info about the error",
+            "properties": {
+              "rate_limit": {
+                "type": "string",
+                "description": "Explanation of the rate limit",
+                "example": "The user has exceeded the rate limit"
+              },
+              "retry_after": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Time when the user can retry the request",
+                "example": "2024-05-31T12:45:00Z"
+              }
+            }
+          }
+        }
+      },
+      "Default500": {
+        "description": "The server has encountered a situation it doesn't know how to handle.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error code",
+            "example": "INTERNAL_SERVER_ERROR"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error description",
+            "example": "The server has encountered a situation it doesn't know how to handle"
+          },
+          "details": {
+            "type": "string",
+            "description": "Additional info about the error",
+            "example": "The server encountered an unexpected condition which prevented it from fulfilling the request."
+          }
+        }
+      },
+      "Default502": {
+        "description": "The server encountered a temporary error and could not complete your request.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          }
+        }
+      },
+      "Default504": {
+        "description": "The server didn't get a response in time in order to get a response to complete the request.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          }
+        }
+      },
+      "IBAN": {
+        "type": "object",
+        "description": "Unique identifier of the IBAN sent in the body of the request.",
+        "required": [
+          "iban"
+        ],
+        "properties": {
+          "iban": {
+            "type": "string",
+            "description": "Unique identifier of the IBAN sent in the body of the request.",
+            "minLength": 4,
+            "maxLength": 34,
+            "example": "ES9420805801101234567891"
+          }
+        }
+      },
+      "IBANValidationResponse": {
+        "type": "object",
+        "description": "Response of the IBAN validation request.",
+        "properties": {
+          "result": {
+            "type": "string",
+            "description": "Result of the validation.",
+            "enum": [
+              "OK",
+              "KO"
+            ],
+            "example": "KO"
+          },
+          "error_message": {
+            "type": "string",
+            "description": "Message with the description of the error.",
+            "example": "The check digit is not correct."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "OAuth2": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://apigee-dev.totalenergies.es/security/accesssecurity/authorization/v1/oauth2/token",
+            "scopes": {
+              "read:iban": "Permiso para validar un IBAN."
+            }
+          }
+        }
+      }
+    }
+  }
+}

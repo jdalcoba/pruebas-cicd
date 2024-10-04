@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<APIProxy revision="8" name="api-demo-prueba-cicd">
+  <DisplayName/>
+  <Description/>
+  <CreatedAt>1728038838688</CreatedAt>
+  <LastModifiedAt>1728038925421</LastModifiedAt>
+  <BasePaths>/cicd/pruebadespliegue/iban/v1</BasePaths>
+  <Policies>
+    <Policy>SA-TrafficControl</Policy>
+    <Policy>FC-PreventSQLInjection</Policy>
+    <Policy>VA-VerifyClientIdSecurityToken</Policy>
+    <Policy>Q-ApplyQuota</Policy>
+    <Policy>CORS-AddCORSOAuth</Policy>
+    <Policy>AM-GetClientIdSecurityToken</Policy>
+    <Policy>FC-MessageLogging-v1</Policy>
+    <Policy>FC-ErrorMessages</Policy>
+    <Policy>OAS-ValidateContract</Policy>
+    <Policy>FC-Logger-v1</Policy>
+    <Policy>JS-ValidateIBAN</Policy>
+    <Policy>AM-SetCORSHeader</Policy>
+    <Policy>FC-OAuth2VerifyToken-v1</Policy>
+    <Policy>JSONTP-JSONSecurity</Policy>
+  </Policies>
+  <ProxyEndpoints>
+    <ProxyEndpoint>default</ProxyEndpoint>
+  </ProxyEndpoints>
+  <Resources>
+    <Resource>oas://IBANContractOAS3Unified.json</Resource>
+    <Resource>properties://log.properties</Resource>
+    <Resource>jsc://ValidateIBAN.js</Resource>
+  </Resources>
+</APIProxy>

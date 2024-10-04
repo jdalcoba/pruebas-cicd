@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Quota continueOnError="false" enabled="true" name="Q-ApplyQuota" type="flexi">
+  <DisplayName>Q-ApplyQuota</DisplayName>
+  <Properties/>
+  <Properties/>
+  <Allow count="5000" countRef="verifyapikey.VA-VerifyClientIdSecurityToken.apiproduct.developer.quota.limit"/>
+  <Interval ref="verifyapikey.VA-VerifyClientIdSecurityToken.apiproduct.developer.quota.interval">1</Interval>
+  <Distributed>true</Distributed>
+  <Synchronous>true</Synchronous>
+  <TimeUnit ref="verifyapikey.VA-VerifyClientIdSecurityToken.apiproduct.developer.quota.timeunit">hour</TimeUnit>
+  <Identifier ref="verifyapikey.VA-VerifyClientIdSecurityToken.client_id"/>
+</Quota>

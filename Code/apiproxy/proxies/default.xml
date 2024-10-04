@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ProxyEndpoint name="default">
+  <Description/>
+  <DefaultFaultRule>
+    <Step>
+      <Name>FC-ErrorMessages</Name>
+    </Step>
+    <Step>
+      <Name>FC-Logger-v1</Name>
+    </Step>
+  </DefaultFaultRule>
+  <PreFlow name="PreFlow">
+    <Request>
+      <Step>
+        <Name>FC-OAuth2VerifyToken-v1</Name>
+        <Condition>request.verb != "OPTIONS"</Condition>
+      </Step>
+      <Step>
+        <Name>SA-TrafficControl</Name>
+        <Condition>request.verb != "OPTIONS"</Condition>
+      </Step>
+      <Step>
+        <Name>AM-GetClientIdSecurityToken</Name>
+        <Condition>request.verb != "OPTIONS"</Condition>
+      </Step>
+      <Step>
+        <Name>VA-VerifyClientIdSecurityToken</Name>
+        <Condition>request.verb != "OPTIONS"</Condition>
+      </Step>
+      <Step>
+        <Name>Q-ApplyQuota</Name>
+        <Condition>request.verb != "OPTIONS"</Condition>
+      </Step>
+      <Step>
+        <Name>OAS-ValidateContract</Name>
+        <Condition>request.verb != "OPTIONS"</Condition>
+      </Step>
+    </Request>
+    <Response>
+    </Response>
+  </PreFlow>
+  <PostFlow name="PostFlow">
+    <Request/>
+    <Response>
+      <Step>
+        <Name>FC-Logger-v1</Name>
+      </Step>
+      <Step>
+        <Name>AM-SetCORSHeader</Name>
+        <Condition>request.header.Origin != null</Condition>
+      </Step>
+    </Response>
+  </PostFlow>
+  <PostClientFlow name="PostClientFlow">
+    <Request/>
+    <Response>
+      <Step>
+        <Name>FC-MessageLogging-v1</Name>
+        <Condition>(sf.logger.enabled = "YES")</Condition>
+      </Step>
+    </Response>
+  </PostClientFlow>
+  <Flows>
+    <Flow name="CORSOptionsPreFlight">
+      <Description>Add CORS</Description>
+      <Request>
+        <Step>
+          <Name>CORS-AddCORSOAuth</Name>
+        </Step>
+      </Request>
+      <Response/>
+      <Condition>(request.verb = "OPTIONS") and (request.header.Origin != null) and (request.header.Access-Control-Request-Method != null)</Condition>
+    </Flow>
+    <Flow name="validate">
+      <Description>Validate IBAN</Description>
+      <Request>
+      </Request>
+      <Response>
+        <Step>
+          <Name>JS-ValidateIBAN</Name>
+        </Step>
+      </Response>
+      <Condition>(proxy.pathsuffix MatchesPath "/validate") and (request.verb = "POST")</Condition>
+    </Flow>
+  </Flows>
+  <HTTPProxyConnection>
+    <BasePath>/cicd/pruebadespliegue/iban/v1</BasePath>
+    <Properties/>
+  </HTTPProxyConnection>
+  <RouteRule name="default"/>
+</ProxyEndpoint>

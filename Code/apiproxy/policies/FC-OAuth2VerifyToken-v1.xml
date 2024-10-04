@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FlowCallout continueOnError="false" enabled="true" name="FC-OAuth2VerifyToken-v1">
+  <DisplayName>FC-OAuth2VerifyToken-v1</DisplayName>
+  <Parameters>
+    <Parameter name="fcparam.oauth2.verify.scopes">
+    [
+      {
+        "verb": "POST",
+        "operation": "/validate",
+        "scopes": "read:iban"
+      }
+    ]
+    </Parameter>
+  </Parameters>
+  <SharedFlowBundle>sf-security-accesssecurity-oauth2verification-v1</SharedFlowBundle>
+</FlowCallout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FlowCallout continueOnError="false" enabled="true" name="FC-Logger-v1">
+  <DisplayName>FC-Logger-v1</DisplayName>
+  <Parameters>
+    <Parameter name="log.request.message.format">{propertyset.log.log_request_message_format}</Parameter>
+    <Parameter name="log.request.masking.data.list">{propertyset.log.log_request_masking_data_list}</Parameter>
+    <Parameter name="log.request.masking.headers.list">{propertyset.log.log_request_masking_headers_list}</Parameter>
+    <Parameter name="log.response.message.format">{propertyset.log.log_response_message_format}</Parameter>
+    <Parameter name="log.response.masking.data.list">{propertyset.log.log_response_masking_data_list}</Parameter>
+    <Parameter name="log.response.masking.headers.list">{propertyset.log.log_response_masking_headers_list}</Parameter>
+  </Parameters>
+  <SharedFlowBundle>sf-enterpriseservices-monitoring-logger-v1</SharedFlowBundle>
+</FlowCallout>

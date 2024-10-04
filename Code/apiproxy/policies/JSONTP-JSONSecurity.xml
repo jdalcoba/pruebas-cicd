@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<JSONThreatProtection continueOnError="false" enabled="true" name="JSONTP-JSONSecurity">
+  <DisplayName>JSONTP-JSONSecurity</DisplayName>
+  <Properties/>
+  <ArrayElementCount>0</ArrayElementCount>
+  <ContainerDepth>1</ContainerDepth>
+  <ObjectEntryCount>1</ObjectEntryCount>
+  <ObjectEntryNameLength>4</ObjectEntryNameLength>
+  <Source>request</Source>
+  <StringValueLength>34</StringValueLength>
+</JSONThreatProtection>

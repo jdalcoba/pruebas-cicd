@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage continueOnError="false" enabled="true" name="AM-GetClientIdSecurityToken">
+  <DisplayName>AM-GetClientIdSecurityToken</DisplayName>
+  <Properties/>
+  <AssignVariable>
+    <Name>application.client_id</Name>
+    <Template>{oauthv2accesstoken.OAuthV2-SF-GetTokenInfo.client_id}</Template>
+  </AssignVariable>
+  <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+</AssignMessage>
