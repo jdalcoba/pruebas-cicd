@@ -1,0 +1,97 @@
+# Este es un workflow básico de GitHub Actions para despliegue en Apigee
+
+name: CI Apigee Proxy Deployment
+
+# Controla cuándo se ejecuta el workflow
+on:
+  # Desencadena el workflow en push o pull request a la rama "main-v1"
+  push:
+    branches: [ "main-v1" ]
+  pull_request:
+    branches: [ "main-v1" ]
+
+  # Permite ejecutar el workflow manualmente desde la pestaña Actions
+  workflow_dispatch:
+
+# Un run de workflow se compone de uno o más jobs que pueden ejecutarse secuencialmente o en paralelo
+jobs:
+  # Este workflow contiene un solo job llamado "build"
+  build:
+    # El tipo de runner que se usará en este job
+    runs-on: ubuntu-latest
+
+    # Los steps representan una secuencia de tareas que se ejecutarán como parte del job
+    steps:
+      # Clona tu repositorio en $GITHUB_WORKSPACE para que tu job pueda acceder a él
+      - uses: actions/checkout@v4
+
+      # Verifica si jq está instalado, de lo contrario lo instala
+      - name: Verificar si jq está instalado
+        run: |
+          if ! command -v jq &> /dev/null; then
+            echo "Instalando jq..."
+            sudo apt-get update && sudo apt-get install -y jq
+          fi
+
+      # Verifica si gcloud CLI está instalado
+      - name: Verificar si gcloud CLI está instalado
+        id: gcloud-check
+        run: |
+          if command -v gcloud > /dev/null; then
+            echo "gcloud está instalado"
+            echo "gcloud-installed=true" >> $GITHUB_ENV
+          else
+            echo "gcloud no está instalado"
+            echo "gcloud-installed=false" >> $GITHUB_ENV
+          fi
+
+      # Condicionalmente instalar gcloud si no está instalado
+      - name: Instalar Google Cloud SDK si es necesario
+        if: env.gcloud-installed == 'false'
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          project_id: ${{ secrets.GCLOUD_PROJECT }}
+          service_account_email: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_EMAIL }}
+          credentials_json: ${{ secrets.GCLOUD_KEY }}
+
+      # Autenticación usando el servicio de Google
+      - name: Autenticación con Google Cloud
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: ${{ secrets.GCLOUD_KEY }}
+
+      # Ejecuta Apigeelint para validar el código del API Proxy
+      - name: Validar el código del API Proxy con Apigeelint
+        run: |
+          npm install -g apigeelint
+          apigeelint -s ./Code/apiproxy -f table
+        continue-on-error: true  # Que prosiga pese a los errores de linteo
+
+      # Comprimir la carpeta apiproxy sin incluir la carpeta "Code"
+      - name: Comprimir apiproxy correctamente
+        run: |
+          cd Code
+          zip -r ../apiproxy.zip ./apiproxy
+          
+       # Subir el proxy a Apigee usando la API REST
+      - name: Subir API Proxy a Apigee
+        run: |
+          echo "Subiendo proxy ${{ secrets.API_PROXY_NAME }}..."
+          RESPONSE=$(curl -X POST \
+            "https://apigee.googleapis.com/v1/organizations/${{ secrets.APIGEE_ORG }}/apis?action=import&name=${{ secrets.API_PROXY_NAME }}" \
+            -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+            -F "file=@./apiproxy.zip")
+          echo "Respuesta de subida: $RESPONSE"
+
+          # Extraer el número de revisión del proxy subido
+          REVISION=$(echo $RESPONSE | jq -r '.revision')
+          echo "Revisión importada: $REVISION"
+
+           # Desplegar el proxy si la subida fue exitosa
+            if [[ "$REVISION" != "null" ]]; then
+                echo "Desplegando proxy ${{ secrets.API_PROXY_NAME }} en el entorno ${{ secrets.APIGEE_ENV }} con la revisión $REVISION"
+                gcloud apigee apis deploy --api="${{ secrets.API_PROXY_NAME }}" --environment="${{ secrets.APIGEE_ENV }}" --override
+            else
+                echo "Error al subir el proxy."
+                exit 1
+            fi
