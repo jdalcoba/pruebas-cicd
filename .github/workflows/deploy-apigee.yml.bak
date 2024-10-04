@@ -24,6 +24,71 @@ jobs:
     steps:
       # Clona tu repositorio en $GITHUB_WORKSPACE para que tu job pueda acceder a él
       - uses: actions/checkout@v4
+      
+      # Este es un workflow básico de GitHub Actions para despliegue en Apigee
+
+name: CI Apigee Proxy Deployment
+
+on:
+  push:
+    branches: [ "main-v1" ]
+  pull_request:
+    branches: [ "main-v1" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Clona tu repositorio en $GITHUB_WORKSPACE para que tu job pueda acceder a él
+      - uses: actions/checkout@v4
+
+      # Instalar Node.js versión 20
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # Verifica si jq está instalado, de lo contrario lo instala
+      - name: Verificar si jq está instalado
+        run: |
+          if ! command -v jq &> /dev/null; then
+            echo "Instalando jq..."
+            sudo apt-get update && sudo apt-get install -y jq
+          fi
+
+      # Instalar Google Cloud SDK si es necesario
+      - name: Instalar Google Cloud SDK si es necesario
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          project_id: ${{ secrets.GCLOUD_PROJECT }}
+          service_account_email: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_EMAIL }}
+          credentials_json: ${{ secrets.GCLOUD_KEY }}
+
+      # Autenticación usando el servicio de Google
+      - name: Autenticación con Google Cloud
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: ${{ secrets.GCLOUD_KEY }}
+
+      # Ejecuta Apigeelint para validar el código del API Proxy
+      - name: Validar el código del API Proxy con Apigeelint
+        run: |
+          npm install -g apigeelint
+          apigeelint -s ./Code/apiproxy -f table
+        continue-on-error: true
+
+      # Comprimir la carpeta apiproxy
+      - name: Comprimir apiproxy
+        run: |
+          cd Code
+          zip -r ../apiproxy.zip ./apiproxy
+
+      # Subir el proxy a Apigee usando la API REST
+      - name: Subir API Proxy a Apigee
+        run
+
 
       # Verifica si jq está instalado, de lo contrario lo instala
       - name: Verificar si jq está instalado
